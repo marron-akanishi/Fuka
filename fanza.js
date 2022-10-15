@@ -12,6 +12,10 @@ window.onload = () => {
     case "detail":
       checkPurchased();
       break;
+    case "list":
+    case "search":
+      checkPurchasedInList();
+      break;
   }
 }
 
@@ -152,6 +156,31 @@ const checkPurchased = async () => {
       elem.value = `${item.purchaseDate}に購入済み`;
     });
   }
+}
+
+/**
+ * 一覧画面で所持済みかを表示
+ */
+const checkPurchasedInList = async () => {
+  const items = document.querySelectorAll("ul#list > li");
+  const list = await getListFromStorage();
+
+  items.forEach((elem) => {
+    const form = elem.querySelector("form[action='/basket/v2/adds'");
+    const div = form.querySelector("div:not(.primary-btn--bookmark)");
+    const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
+    const item = list.find((item) => item.itemId === itemId);
+    if (!item) return;
+
+    div.classList.add("fuka__remove-before");
+    div.style.top = 0;
+    div.style.opacity = 1;
+    div.style.padding = "0 6px";
+    const btn = div.querySelector("input[type='submit']");
+    btn.classList.add("fuka__list-submit");
+    btn.disabled = true;
+    btn.value = "購入済み";
+  });
 }
 
 /**
