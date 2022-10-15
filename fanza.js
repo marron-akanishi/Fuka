@@ -151,7 +151,7 @@ const checkPurchased = async () => {
   const form = document.querySelector("form.detail-purchase-btn");
   const id = form.querySelector("input[name='id']").value;
   const list = await getListFromStorage();
-  const item = list.find((item) => item.itemId === id);
+  const item = list.find((item) => id.startsWith(item.itemId));
 
   if (item) {
     const formAll = document.querySelectorAll("form.detail-purchase-btn");
@@ -177,7 +177,7 @@ const checkPurchasedInList = async () => {
     if (!form) return;
     const div = form.querySelector("div:not(.primary-btn--bookmark)");
     const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
-    const item = list.find((item) => item.itemId === itemId);
+    const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
     div.classList.add("fuka__remove-before");
@@ -202,7 +202,7 @@ const checkPurchasedInSearch = async () => {
     const form = elem.querySelector("form[action='/basket/v2/adds']");
     if (!form) return;
     const itemId = form.querySelector("input[name='item_info']").value.split('.')[0];
-    const item = list.find((item) => item.itemId === itemId);
+    const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
     const btn = form.querySelector("span.component-legacy-productTile__btnBasketInner");
@@ -226,7 +226,7 @@ const checkPurchasedInRanking = async () => {
     if (!form) return;
     const div = form.querySelector("div.primary-btn");
     const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
-    const item = list.find((item) => item.itemId === itemId);
+    const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
     div.classList.add("fuka__remove-before");
