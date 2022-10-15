@@ -3,17 +3,30 @@ const UPDATE_BTN_ID = "fuka-update";
 
 window.onload = () => {
   const nowPath = location.pathname.split('/')[1];
+  displayPurchasedCount();
   switch(nowPath) { 
     case "mylibrary":
-      console.log("購入済み一覧");
       setListUpdateButton();
       displayInListIcon();
       break;
     case "detail":
-      console.log("詳細ページ");
       checkPurchased();
       break;
   }
+}
+
+/**
+ * サイドバーの購入済みに個数を表示する
+ */
+const displayPurchasedCount = async () => {
+  const target = document.querySelector("a[data-analytics-label='my_library']");
+  if (!target) return;
+
+  const list = await getListFromStorage();
+  const span = document.createElement("span");
+  span.classList.add("component-commonMenu__buttonCount");
+  span.innerHTML = `<span>${list.length}</span>`;
+  target.appendChild(span);
 }
 
 /**
