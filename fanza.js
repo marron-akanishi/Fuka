@@ -2,7 +2,8 @@ const HOLDING_LIST_ID = "holding";
 const UPDATE_BTN_ID = "fuka-update";
 
 window.onload = () => {
-  const nowPath = location.pathname.split('/')[1];
+  const nowPath = location.pathname.split('/')[1].split('?')[0];
+  console.log(nowPath);
   displayPurchasedCount();
   switch(nowPath) { 
     case "mylibrary":
@@ -14,7 +15,7 @@ window.onload = () => {
       break;
     case "list":
     case "search":
-      checkPurchasedInList();
+      checkPurchasedInList(nowPath);
       break;
   }
 }
@@ -161,25 +162,44 @@ const checkPurchased = async () => {
 /**
  * 一覧画面で所持済みかを表示
  */
-const checkPurchasedInList = async () => {
-  const items = document.querySelectorAll("ul#list > li");
+const checkPurchasedInList = async (type) => {
+  const items = type === 'list' ? document.querySelectorAll("ul#list > li") : document.querySelectorAll("ul.component-legacy-productTile > li");
   const list = await getListFromStorage();
 
   items.forEach((elem) => {
-    const form = elem.querySelector("form[action='/basket/v2/adds'");
-    const div = form.querySelector("div:not(.primary-btn--bookmark)");
-    const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
-    const item = list.find((item) => item.itemId === itemId);
-    if (!item) return;
+    const form = elem.querySelector("form[action='/basket/v2/adds']");
 
-    div.classList.add("fuka__remove-before");
-    div.style.top = 0;
-    div.style.opacity = 1;
-    div.style.padding = "0 6px";
-    const btn = div.querySelector("input[type='submit']");
-    btn.classList.add("fuka__list-submit");
-    btn.disabled = true;
-    btn.value = "購入済み";
+    switch(type) {
+      case "list": {
+        const div = form.querySelector("div:not(.primary-btn--bookmark)");
+        const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
+        const item = list.find((item) => item.itemId === itemId);
+        if (!item) break;
+
+        div.classList.add("fuka__remove-before");
+        div.style.top = 0;
+        div.style.opacity = 1;
+        div.style.padding = "0 6px";
+        const btn = div.querySelector("input[type='submit']");
+        btn.classList.add("fuka__list-submit");
+        btn.disabled = true;
+        btn.value = "購入済み";
+        break;
+      }
+      case "search": {
+        console.log(form);
+        const itemId = form.querySelector("input[name='item_info']").value.split('.')[0];
+        const item = list.find((item) => item.itemId === itemId);
+        if (!item) break;
+
+        const btn = form.querySelector("span.component-legacy-productTile__btnBasketInner");
+        btn.classList.add("fuka__remove-before");
+        btn.style.top = 0;
+        btn.style.opacity = 1;
+        btn.innerHTML = "<span style='width: 100%'>購入済み</span>"
+        break;
+      }
+    }
   });
 }
 
