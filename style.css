@@ -1,0 +1,8 @@
+.fuka__done {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: url(https://p.dmm.co.jp/p/dc/mylibrary/ico.png) no-repeat scroll 5px -597px;
+  width: 20px;
+  height: 20px;
+}

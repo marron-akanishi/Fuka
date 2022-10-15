@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Fuka",
+  "version": "1.0.0",
+  "description": "Chrome Extension for Fanza",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://dlsoft.dmm.co.jp/*"],
+      "css": ["style.css"],
+      "js": ["fanza.js"]
+    }
+  ],
+  "permissions": ["storage"],
+  "host_permissions": ["https://dlsoft.dmm.co.jp/*"]
+}
