@@ -150,11 +150,13 @@ const checkPurchased = async () => {
   const item = list.find((item) => item.itemId === id);
 
   if (item) {
-    const btn = document.querySelectorAll("form.detail-purchase-btn input[type='submit']");
-    btn.forEach((elem) => {
-      elem.style.cursor = "default";
-      elem.disabled = true;
-      elem.value = `${item.purchaseDate}に購入済み`;
+    const formAll = document.querySelectorAll("form.detail-purchase-btn");
+    formAll.forEach((elem) => {
+      elem.style.opacity = 1;
+      const btn = elem.querySelector("input[type='submit']");
+      btn.style.cursor = "default";
+      btn.disabled = true;
+      btn.value = `${item.purchaseDate}に購入済み`;
     });
   }
 }
@@ -194,8 +196,9 @@ const checkPurchasedInList = async (type) => {
 
         const btn = form.querySelector("span.component-legacy-productTile__btnBasketInner");
         btn.classList.add("fuka__remove-before");
-        btn.style.top = 0;
-        btn.style.opacity = 1;
+        btn.parentElement.style.top = 0;
+        btn.parentElement.style.opacity = 1;
+        btn.parentElement.style.cursor = "default";
         btn.innerHTML = "<span style='width: 100%'>購入済み</span>"
         break;
       }
