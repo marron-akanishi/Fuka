@@ -18,6 +18,9 @@ window.onload = () => {
     case "search":
       checkPurchasedInSearch();
       break;
+    case "ranking":
+      checkPurchasedInRanking();
+      break;
   }
 }
 
@@ -208,6 +211,33 @@ const checkPurchasedInSearch = async () => {
     btn.parentElement.style.opacity = 1;
     btn.parentElement.style.cursor = "default";
     btn.innerHTML = "<span style='width: 100%'>購入済み</span>";
+  });
+}
+
+/**
+ * ランキング画面で所持済みかを表示
+ */
+const checkPurchasedInRanking = async () => {
+  const items = document.querySelectorAll("ul.rankingList-content > li");
+  const list = await getListFromStorage();
+
+  items.forEach((elem) => {
+    const form = elem.querySelector("form[action='/basket/v2/adds/']");
+    if (!form) return;
+    const div = form.querySelector("div.primary-btn");
+    const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
+    const item = list.find((item) => item.itemId === itemId);
+    if (!item) return;
+
+    div.classList.add("fuka__remove-before");
+    div.style.top = 0;
+    div.style.opacity = 1;
+    div.style.padding = "0 6px";
+    const btn = div.querySelector("input[type='submit']");
+    btn.style.padding = 0;
+    btn.disabled = true;
+    btn.style.cursor = "default";
+    btn.value = "購入済み";
   });
 }
 
