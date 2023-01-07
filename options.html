@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Fuka</title>
+  <style>
+    body {
+      max-width: 768px;
+    }
+
+    table, th, td {
+      border: 1px solid #333;
+      border-collapse: collapse;
+    }
+
+    .mb-4 {
+      margin-bottom: 4px;
+    }
+
+    .mb-8 {
+      margin-bottom: 8px;
+    }
+
+    .border {
+      border-bottom: 1px solid gray;
+    }
+  </style>
+</head>
+<body>
+  <div class="border">
+    <h3>単一追加</h3>
+    <form>
+      <div class="mb-4">
+        <label for="item-id">商品ID：</label>
+        <input type="text" id="item-id" name="item-id" />
+      </div>
+      <div class="mb-4">
+        <label for="title">タイトル：</label>
+        <input type="text" id="title" name="title" />
+      </div>
+      <div class="mb-4">
+        <label for="purchase-date">購入日：</label>
+        <input type="text" id="purchase-date" name="purchase-date" />
+      </div>
+      <button type="button" id="add-btn" class="mb-8">追加</button>
+    </form>
+  </div>
+  <div class="border">
+    <h3>CSV追加</h3>
+    <input type="file" id="csv-file" name="csv-file" accept=".csv" />
+    <button type="button" id="csv-add-btn" class="mb-8">追加</button>
+  </div>
+  <div>
+    <h3>登録済み一覧</h3>
+    <span id="list-count"></span>
+    <button type="button" id="clear-btn" class="mb-8">リスト全削除</button>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>タイトル</th>
+          <th>購入日</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
