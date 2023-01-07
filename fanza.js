@@ -149,7 +149,8 @@ const getMyLibraryList = () => {
  */
 const checkPurchased = async () => {
   const form = document.querySelector("form.detail-purchase-btn");
-  const id = form.querySelector("input[name='id']").value;
+  const id = form?.querySelector("input[name='id']")?.value;
+  if (!id) return;
   const list = await getListFromStorage();
   const item = list.find((item) => id.startsWith(item.itemId));
 
@@ -158,9 +159,16 @@ const checkPurchased = async () => {
     formAll.forEach((elem) => {
       elem.style.opacity = 1;
       const btn = elem.querySelector("input[type='submit']");
-      btn.style.cursor = "default";
-      btn.disabled = true;
-      btn.value = `${item.purchaseDate}に購入済み`;
+      if (!btn) return;
+      if (btn.parentElement.classList.contains("d-btn-hi-st-bskt")) {
+        btn.parentElement.classList.add("is-disabled");
+        btn.parentElement.innerHTML = "購入済み";
+      } else {
+        btn.style.cursor = "default";
+        btn.disabled = true;
+        btn.style.background = "linear-gradient(0deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), #FF8120";
+        btn.value = "購入済み";
+      }
     });
   }
 }
