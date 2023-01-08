@@ -21,6 +21,10 @@ window.onload = () => {
     case "ranking":
       checkPurchasedInRanking();
       break;
+    case "basket":
+      if (location.pathname.split('/')[2] !== "select_items") break;
+      checkPurchasedInSelectItems();
+      break;
   }
 }
 
@@ -246,6 +250,40 @@ const checkPurchasedInRanking = async () => {
     btn.disabled = true;
     btn.style.cursor = "default";
     btn.value = "購入済み";
+  });
+}
+
+/**
+ * まとめ買い選択画面で所有済みかを表示
+ * 
+ * CSSクラス名が自動生成で仮想スクロール導入されてるのがとても面倒
+ */
+const checkPurchasedInSelectItems = async () => {
+  const ENABLE_CLASS_NAME = "gDNxWy"
+  const DISABLE_CLASS_NAME = "cLqUit";
+
+  const list = await getListFromStorage();
+  const observer = new MutationObserver(() => {
+    const items = document.querySelectorAll("#root ul li");
+    items.forEach((elem) => {
+      const itemId = elem.querySelector("input[type='hidden']")?.id;
+      if (!itemId) return;
+      const item = list.find((item) => itemId.startsWith(item.itemId));
+      if (!item) return;
+  
+      const btn = elem.querySelector("button");
+      if (btn.disabled) return;
+      btn.classList.remove(ENABLE_CLASS_NAME);
+      btn.classList.add(DISABLE_CLASS_NAME);
+      btn.disabled = true;
+      btn.textContent = "購入済み";
+    });
+  });
+
+  const listElem = document.querySelector("#root");
+  observer.observe(listElem, {
+    childList: true,
+    subtree: true
   });
 }
 
