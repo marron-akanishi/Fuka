@@ -193,8 +193,8 @@ const checkPurchasedInList = async () => {
     if (!item) return;
 
     div.classList.add("fuka__remove-before");
+    div.classList.add("fuka__purchased-btn");
     div.style.top = 0;
-    div.style.opacity = 1;
     div.style.padding = "0 6px";
     const btn = div.querySelector("input[type='submit']");
     btn.classList.add("fuka__list-submit");
@@ -219,9 +219,9 @@ const checkPurchasedInSearch = async () => {
 
     const btn = form.querySelector("span.component-legacy-productTile__btnBasketInner");
     btn.classList.add("fuka__remove-before");
+    btn.parentElement.classList.add("fuka__purchased-btn")
     btn.parentElement.style.top = 0;
-    btn.parentElement.style.opacity = 1;
-    btn.parentElement.style.cursor = "default";
+    btn.parentElement.disabled = true;
     btn.innerHTML = "<span style='width: 100%'>購入済み</span>";
   });
 }
@@ -242,8 +242,8 @@ const checkPurchasedInRanking = async () => {
     if (!item) return;
 
     div.classList.add("fuka__remove-before");
+    div.classList.add("fuka__purchased-btn");
     div.style.top = 0;
-    div.style.opacity = 1;
     div.style.padding = "0 6px";
     const btn = div.querySelector("input[type='submit']");
     btn.style.padding = 0;

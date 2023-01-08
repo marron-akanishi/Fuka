@@ -8,7 +8,7 @@
   height: 20px;
 }
 
-/* 一覧画面での購入ボタンからbefore要素を削除 */
+/* 購入ボタンからbefore要素（アイコン）を削除 */
 .fuka__remove-before::before {
   display: none !important;
 }
@@ -16,6 +16,14 @@
 /* 一覧画面での購入済みボタン */
 #main-src.ds-list-new .primary-btn .fuka__list-submit {
   padding: 0 !important;
+  cursor: default;
+}
+
+/* 購入済みボタンのデザインをブックマークと同じようなデザインに変更 */
+.fuka__purchased-btn {
+  border: solid 1px #d9d9d9 !important;
+  background: linear-gradient(180deg, #fff 0%, #e6e6e6 100%) !important;
+  opacity: 0.7 !important;
   cursor: default;
 }
 
