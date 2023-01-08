@@ -260,7 +260,7 @@ const checkPurchasedInRanking = async () => {
  */
 const checkPurchasedInSelectItems = async () => {
   const ENABLE_CLASS_NAME = "gDNxWy"
-  const DISABLE_CLASS_NAME = "cLqUit";
+  const DISABLE_CLASS_NAME = "fuka__disabled-btn";
 
   const list = await getListFromStorage();
   const observer = new MutationObserver(() => {
