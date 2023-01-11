@@ -175,16 +175,20 @@ const addItemByCsv = async () => {
   // CSVファイルの読み込み
   const csv = await loadCsv(csvFile);
   const addList = csv.split("\n");
+  // ヘッダー行ありの場合は削除
+  const hasHeader = document.getElementById("has-header")?.checked;
+  if (hasHeader) addList.shift();
   // 登録
   let count = 0;
   addList.forEach((line) => {
-    const items = line.trim().split(",");
+    const items = line.trim().replaceAll("\"", "").split(",");
+    if (items.length < 3) return;
     const newList = addItem(list, items[0], items[1], items[2]);
     if (newList.length !== 0) {
       list = newList;
       count = count + 1;
     } else {
-      console.warn("[登録失敗]", items[1]);
+      console.log("[登録失敗]", items[1]);
     }
   });
 

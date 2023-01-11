@@ -13,6 +13,12 @@
       border-collapse: collapse;
     }
 
+    .checkbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
     .mb-4 {
       margin-bottom: 4px;
     }
@@ -47,9 +53,13 @@
   </div>
   <div class="border">
     <h3>CSV追加</h3>
+    <div class="checkbox">
+      <input type="checkbox" id="has-header" name="has-header" />
+      <label for="has-header">ヘッダー行あり</label>
+    </div>
     <input type="file" id="csv-file" name="csv-file" accept=".csv" />
     <button type="button" id="csv-add-btn" class="mb-8">追加</button>
-    <div class="mb-8">CSVは「商品ID,タイトル,購入日」の順序、ヘッダー無しで作成</div>
+    <div class="mb-8">CSVは「商品ID,タイトル,購入日」の順序、「"」は削除される</div>
   </div>
   <div>
     <h3>登録済み一覧</h3>
