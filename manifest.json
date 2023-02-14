@@ -3,6 +3,9 @@
   "name": "Fuka",
   "version": "1.0.0",
   "description": "Chrome Extension for FANZA",
+  "action": {
+    "default_title": "Fukaの設定画面を開く"
+  },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
@@ -14,6 +17,9 @@
       "js": ["fanza.js"]
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "permissions": ["storage"],
   "host_permissions": ["https://dlsoft.dmm.co.jp/*"]
 }
