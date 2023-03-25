@@ -259,7 +259,6 @@ const checkPurchasedInRanking = async () => {
  * CSSクラス名が自動生成で仮想スクロール導入されてるのがとても面倒
  */
 const checkPurchasedInSelectItems = async () => {
-  const ENABLE_CLASS_NAME = "gDNxWy"
   const DISABLE_CLASS_NAME = "fuka__disabled-btn";
 
   const list = await getListFromStorage();
@@ -273,7 +272,7 @@ const checkPurchasedInSelectItems = async () => {
   
       const btn = elem.querySelector("button");
       if (btn.disabled) return;
-      btn.classList.remove(ENABLE_CLASS_NAME);
+      btn.classList.remove(...btn.classList);
       btn.classList.add(DISABLE_CLASS_NAME);
       btn.disabled = true;
       btn.textContent = "購入済み";
