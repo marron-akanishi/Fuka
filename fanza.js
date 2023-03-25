@@ -32,7 +32,7 @@ window.onload = () => {
  * サイドバーの購入済みに個数を表示する
  */
 const displayPurchasedCount = async () => {
-  const target = document.querySelector("a[data-analytics-label='my_library']");
+  const target = document.querySelector("a[data-js-pj-ga4-click-action='move_mylibrary@left_navi:myliblary_area']");
   if (!target) return;
 
   const list = await getListFromStorage();
