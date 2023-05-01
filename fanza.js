@@ -260,6 +260,7 @@ const checkPurchasedInRanking = async () => {
  */
 const checkPurchasedInSelectItems = async () => {
   const DISABLE_CLASS_NAME = "fuka__disabled-btn";
+  let enableClassList = [];
 
   const list = await getListFromStorage();
   const observer = new MutationObserver(() => {
@@ -268,7 +269,23 @@ const checkPurchasedInSelectItems = async () => {
       const itemId = elem.querySelector("input[type='hidden']")?.id;
       if (!itemId) return;
       const item = list.find((item) => itemId.startsWith(item.itemId));
-      if (!item) return;
+      if (!item) {
+        const btn = elem.querySelector("button");
+        // 有効ボタンのスタイルを取得しておく
+        if (enableClassList.length === 0 && !btn.disabled) {
+          enableClassList = btn.classList;
+        }
+        // FANZA側で無効になっているボタンはそのままにする
+        if (!btn.classList.contains(DISABLE_CLASS_NAME)) {
+          return;
+        }
+        // 一度無効になったボタンが有効に戻らないため、スタイルを復元する
+        btn.classList.remove(DISABLE_CLASS_NAME);
+        btn.classList.add(...enableClassList);
+        btn.disabled = false;
+        btn.textContent = "選択する";
+        return;
+      }
   
       const btn = elem.querySelector("button");
       if (btn.disabled) return;
