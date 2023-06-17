@@ -1,3 +1,6 @@
+/*
+ * 購入済み一覧画面
+ */
 /* 所持リストでのチェックマーク */
 .fuka__done {
   position: absolute;
@@ -8,12 +11,15 @@
   height: 20px;
 }
 
+/*
+ * 検索一覧画面
+ */
 /* 購入ボタンからbefore要素（アイコン）を削除 */
 .fuka__remove-before::before {
   display: none !important;
 }
 
-/* 一覧画面での購入済みボタン */
+/* 購入済みボタン */
 #main-src.ds-list-new .primary-btn .fuka__list-submit {
   padding: 0 !important;
   cursor: default;
@@ -27,7 +33,21 @@
   cursor: default;
 }
 
-/* まとめ買い画面での購入済みボタン */
+/*
+ * 商品詳細画面
+ */
+.fuka__remove-hover {
+  cursor: default !important;
+}
+
+.fuka__remove-hover:hover {
+  opacity: 1 !important;
+}
+
+/*
+ * まとめ買い画面
+ */
+/* 購入済みボタン */
 .fuka__disabled-btn {
   appearance: none;
   background: url(//p.dmm.com/p/common/bt/bg_bt.gif) 0px center no-repeat rgb(210, 210, 210);

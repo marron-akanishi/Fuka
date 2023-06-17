@@ -150,15 +150,18 @@ const getMyLibraryList = () => {
 
 /**
  * 詳細ページで所持済みかを表示
+ * 
+ * FANZA側で購入済み表示になるものは無視する（そもそも購入用のformが存在しないため、IDが取得出来ない）
  */
 const checkPurchased = async () => {
-  const form = document.querySelector("form.detail-purchase-btn");
+  const form = document.querySelector("form.basket__button--purchase");
   const id = form?.querySelector("input[name='id']")?.value;
   if (!id) return;
   const list = await getListFromStorage();
   const item = list.find((item) => id.startsWith(item.itemId));
 
   if (item) {
+    /* 旧デザイン（スクロール時に右下に表示される購入ボタン） */
     const formAll = document.querySelectorAll("form.detail-purchase-btn");
     formAll.forEach((elem) => {
       elem.style.opacity = 1;
@@ -173,6 +176,20 @@ const checkPurchased = async () => {
         btn.style.background = "linear-gradient(0deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), #FF8120";
         btn.value = "購入済み";
       }
+    });
+
+    /* 新デザイン */
+    const newFormAll = document.querySelectorAll("form.basket__button--purchase");
+    newFormAll.forEach((elem) => {
+      elem.parentElement.classList.add("fuka__remove-hover");
+      elem.classList.add("fuka__remove-hover");
+      const btn = elem.querySelector("input[type='submit']");
+      if (!btn) return;
+      btn.remove();
+      const purchasedBtn = document.createElement("div");
+      purchasedBtn.innerHTML = "購入済み";
+      purchasedBtn.classList.add("basket__purchased");
+      elem.appendChild(purchasedBtn);
     });
   }
 }
