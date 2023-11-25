@@ -12,6 +12,14 @@
 }
 
 /*
+ * お気に入りリスト画面
+ */
+/* お気に入り一覧登録済み表示チェックボックス背景色 */
+#main-bmk .checkarea.fuka__in-list {
+  background-color: aquamarine;
+}
+
+/*
  * 検索一覧画面
  */
 /* 購入ボタンからbefore要素（アイコン）を削除 */

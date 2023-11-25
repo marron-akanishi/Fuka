@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Fuka SidePanel</title>
+  <style>
+    h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      padding: 8px;
+      border: 1px solid gray;
+      border-radius: 8px;
+
+      > img {
+        height: 100px;
+        margin-right: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h3>
+    お気に入り一覧
+    <button type="button" id="update-btn">更新</button>
+  </h3>
+  <div id="list"></div>
+  <script src="sidepanel.js"></script>
+</body>

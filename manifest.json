@@ -7,8 +7,11 @@
     "default_title": "Fukaの設定画面を開く"
   },
   "options_ui": {
-    "page": "options.html",
+    "page": "options/options.html",
     "open_in_tab": true
+  },
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
   },
   "content_scripts": [
     {
@@ -20,6 +23,10 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["storage"],
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "tabs"
+  ],
   "host_permissions": ["https://dlsoft.dmm.co.jp/*"]
 }

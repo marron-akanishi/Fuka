@@ -1,4 +1,5 @@
-const HOLDING_LIST_ID = "holding";
+const HOLDING_LIST_ID = "holding"; // storage内所持リストID
+const BOOKMARK_LIST_ID = "bookmark"; // storage内お気に入り一覧ID
 
 /**
  * ストレージから所持リストを取得する
@@ -9,9 +10,21 @@ const HOLDING_LIST_ID = "holding";
  * - title: 商品名
  * - purchaseDate: 購入日
  */
-const getListFromStorage = async () => {
+const getHoldingListFromStorage = async () => {
   const storage = await chrome.storage.local.get(HOLDING_LIST_ID);
   return storage[HOLDING_LIST_ID] || [];
+}
+
+/**
+ * ストレージからお気に入り一覧を取得する
+ * 
+ * お気に入り一覧の形状
+ * - itemId: 商品ID
+ * - title: 商品名
+ */
+const getBookmarkListFromStorage = async () => {
+  const storage = await chrome.storage.local.get(BOOKMARK_LIST_ID);
+  return storage[BOOKMARK_LIST_ID] || [];
 }
 
 /**
@@ -22,6 +35,7 @@ const getListFromStorage = async () => {
 const setListToStorage = async (newList) => {
   const savedata = {};
   savedata[HOLDING_LIST_ID] = newList;
+  savedata[BOOKMARK_LIST_ID] = await getBookmarkListFromStorage();
   await chrome.storage.local.set(savedata);
 }
 
@@ -49,7 +63,7 @@ const loadCsv = (file) => {
  * リスト取得
  */
 const getList = async () => {
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const table = document.getElementById("list");
   // 総件数表示
   const span = document.getElementById("list-count");
@@ -97,7 +111,7 @@ const clearStorage = () => {
 const deleteItem = async (itemId) => {
   if (!confirm(`${itemId}を削除？`)) return;
 
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const newList = list.filter((item) => item.itemId !== itemId);
   await setListToStorage(newList);
   getList();
@@ -142,7 +156,7 @@ const addItem = (list, itemId, title, purchaseDate) => {
  * 単一追加
  */
 const addSingleItem = async () => {
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const itemIdElem = document.getElementById("item-id");
   const titleElem = document.getElementById("title");
   const purchaseDateElem = document.getElementById("purchase-date");
@@ -165,7 +179,7 @@ const addSingleItem = async () => {
  * CSVによる複数追加
  */
 const addItemByCsv = async () => {
-  let list = await getListFromStorage();
+  let list = await getHoldingListFromStorage();
   const csvFile = document.getElementById("csv-file").files[0];
   if (!csvFile) {
     alert("CSVファイルを指定してください");

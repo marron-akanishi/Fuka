@@ -1,13 +1,18 @@
-const HOLDING_LIST_ID = "holding";
-const UPDATE_BTN_ID = "fuka-update";
+const HOLDING_LIST_ID = "holding"; // storage内所持リストID
+const BOOKMARK_LIST_ID = "bookmark"; // storage内お気に入り一覧ID
+const UPDATE_BTN_ID = "fuka-update"; // 画面内storage更新ボタンID
 
 window.onload = () => {
   const nowPath = location.pathname.split('/')[1].split('?')[0];
   displayPurchasedCount();
   switch (nowPath) {
     case "mylibrary":
-      setListUpdateButton();
+      setListUpdateButtonForMyLibrary();
       displayInListIcon();
+      break;
+    case "bookmark":
+      setListUpdateButtonForBookmark();
+      setInListColor();
       break;
     case "detail":
       checkPurchased();
@@ -35,7 +40,7 @@ const displayPurchasedCount = async () => {
   const target = document.querySelector("a[data-js-pj-ga4-click-action='move_mylibrary@left_navi:myliblary_area']");
   if (!target) return;
 
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const span = document.createElement("span");
   span.classList.add("component-commonMenu__buttonCount");
   span.innerHTML = `<span>${list.length}</span>`;
@@ -45,7 +50,7 @@ const displayPurchasedCount = async () => {
 /**
  * 購入済み一覧に所持リスト更新ボタン設置
  */
-const setListUpdateButton = () => {
+const setListUpdateButtonForMyLibrary = () => {
   const span = document.createElement("span");
   span.classList.add("ml-btn");
   span.style.top = 0;
@@ -65,7 +70,7 @@ const setListUpdateButton = () => {
  * 所持リストに登録済みかを判定し、アイコンを表示
  */
 const displayInListIcon = async () => {
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
 
   const items = getMyLibraryList();
   items.forEach((item) => {
@@ -84,15 +89,12 @@ const displayInListIcon = async () => {
 }
 
 /**
- * 更新ボタン押下時
+ * 購入済み一覧更新ボタン押下時
  */
 const updateHoldingList = async () => {
-  // ボタンを非表示にして更新表示にする
-  const btn = document.getElementById(UPDATE_BTN_ID);
-  btn.value = "更新中";
-  btn.disabled = true;
+  disableUpdateButton(true);
 
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const items = getMyLibraryList();
   const promises = [];
   items.forEach((elem) => {
@@ -113,17 +115,32 @@ const updateHoldingList = async () => {
 
   const savedata = {};
   savedata[HOLDING_LIST_ID] = list;
+  savedata[BOOKMARK_LIST_ID] = await getBookmarkListFromStorage();
   chrome.storage.local.set(savedata, function () {
     displayInListIcon();
   });
 
-  // ボタンを再表示
-  btn.value = "所持リスト更新";
-  btn.disabled = false;
+  disableUpdateButton(false);
 }
 
 /**
- * 購入日を取得する
+ * 更新ボタンの活性状態を切り替える
+ */
+const disableUpdateButton = (isDisabled) => {
+  const btn = document.getElementById(UPDATE_BTN_ID);
+  if (!btn) return;
+
+  if (isDisabled) {
+    btn.value = "更新中";
+    btn.disabled = true;
+  } else {
+    btn.value = "所持リスト更新";
+    btn.disabled = false;
+  }
+}
+
+/**
+ * 商品のタイトルと購入日を取得する
  */
 const getItemDetail = async (id) => {
   const resp = await fetch(`https://dlsoft.dmm.co.jp/mylibrary/detail/?item=${id}`);
@@ -149,6 +166,74 @@ const getMyLibraryList = () => {
 }
 
 /**
+ * お気に入りリストにお気に入り一覧更新ボタンを追加
+ */
+const setListUpdateButtonForBookmark = () => {
+  const span = document.createElement("span");
+  span.classList.add("d-btn");
+  span.style.top = 0;
+
+  const btn = document.createElement("button");
+  btn.id = UPDATE_BTN_ID;
+  btn.type = "button";
+  btn.textContent = "お気に入り一覧更新";
+  btn.addEventListener("click", updateBookmarkList);
+  span.appendChild(btn);
+
+  const target = document.querySelector("div.d-boxcaptside.d-boxseparate");
+  target.prepend(span);
+}
+
+/**
+ * お気に入り一覧に登録済みかを判定し、チェックボックス部分の背景色を変更
+ */
+const setInListColor = async () => {
+  const list = await getBookmarkListFromStorage();
+
+  list.forEach((item) => {
+    const checkbox = document.querySelector(`input[type='checkbox'][name='item_info[]'][value^='${item.itemId}']`);
+    if (checkbox) checkbox.parentElement.classList.add('fuka__in-list');
+  });
+}
+
+/**
+ * お気に入りリスト更新ボタン押下時
+ */
+const updateBookmarkList = async () => {
+  disableUpdateButton(true);
+
+  const savedata = {};
+  savedata[HOLDING_LIST_ID] = await getHoldingListFromStorage();
+  savedata[BOOKMARK_LIST_ID] = getBookmarkList();
+  chrome.storage.local.set(savedata, function () {
+    setInListColor();
+  });
+
+  disableUpdateButton(false);
+}
+
+/**
+ * お気に入りリスト内の商品を取得する
+ * 返却する内容は商品ID、タイトル、画像URL
+ */
+const getBookmarkList = () => {
+  const list = document.querySelectorAll("ul#list > li");
+
+  const items = [];
+  list.forEach((item) => {
+    const tmb = item.querySelector("p.tmb");
+    const itemId = tmb.querySelector("a").href.split('/').reverse()[1];
+    const img = tmb.querySelector("img");
+    const title = img.alt;
+    const imgUrl = img.src;
+
+    items.push({itemId, title, imgUrl});
+  });
+
+  return items;
+}
+
+/**
  * 詳細ページで所持済みかを表示
  * 
  * FANZA側で購入済み表示になるものは無視する（そもそも購入用のformが存在しないため、IDが取得出来ない）
@@ -157,7 +242,7 @@ const checkPurchased = async () => {
   const form = document.querySelector("form.basket__button--purchase");
   const id = form?.querySelector("input[name='id']")?.value;
   if (!id) return;
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const item = list.find((item) => id.startsWith(item.itemId));
 
   if (item) {
@@ -199,7 +284,7 @@ const checkPurchased = async () => {
  */
 const checkPurchasedInList = async () => {
   const items = document.querySelectorAll("ul#list > li");
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
     const form = elem.querySelector("form[action='/basket/v2/adds']");
@@ -225,7 +310,7 @@ const checkPurchasedInList = async () => {
  */
 const checkPurchasedInSearch = async () => {
   const items = document.querySelectorAll("ul.component-legacy-productTile > li");
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
     const form = elem.querySelector("form[action='/basket/v2/adds']");
@@ -248,7 +333,7 @@ const checkPurchasedInSearch = async () => {
  */
 const checkPurchasedInRanking = async () => {
   const items = document.querySelectorAll("ul.rankingList-content > li");
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
     const form = elem.querySelector("form[action='/basket/v2/adds/']");
@@ -279,7 +364,7 @@ const checkPurchasedInSelectItems = async () => {
   const DISABLE_CLASS_NAME = "fuka__disabled-btn";
   let enableClassList = [];
 
-  const list = await getListFromStorage();
+  const list = await getHoldingListFromStorage();
   const observer = new MutationObserver(() => {
     const items = document.querySelectorAll("#root ul li");
     items.forEach((elem) => {
@@ -329,7 +414,20 @@ const checkPurchasedInSelectItems = async () => {
  * - title: 商品名
  * - purchaseDate: 購入日
  */
-const getListFromStorage = async () => {
+const getHoldingListFromStorage = async () => {
   const storage = await chrome.storage.local.get(HOLDING_LIST_ID);
   return storage[HOLDING_LIST_ID] || [];
+}
+
+/**
+ * ストレージからお気に入り一覧を取得する
+ * 
+ * お気に入り一覧の形状
+ * - itemId: 商品ID
+ * - title: 商品名
+ * - imgUrl: サムネイル画像URL
+ */
+const getBookmarkListFromStorage = async () => {
+  const storage = await chrome.storage.local.get(BOOKMARK_LIST_ID);
+  return storage[BOOKMARK_LIST_ID] || [];
 }
