@@ -20,17 +20,39 @@
 }
 
 /*
+ * 商品詳細画面
+ */
+.fuka__detail_remove-hover {
+  cursor: default !important;
+}
+
+.fuka__detail_remove-hover:hover {
+  opacity: 1 !important;
+}
+
+/*
+ * 商品一覧画面
+ */
+/* 購入済みボタンをグレーに変更 */
+/* 非活性デザインは元のスタイルを利用する */
+.fuka__list_purchased-btn {
+  background-color: #d9d9d9 !important;
+}
+
+/* 購入ボタンからアイコンを削除 */
+.fuka__list_purchased-btn>.component-textButton__icon--left {
+  display: none !important;
+}
+
+/*
  * 検索一覧画面
+ */
+/*
+ * ランキング画面
  */
 /* 購入ボタンからbefore要素（アイコン）を削除 */
 .fuka__remove-before::before {
   display: none !important;
-}
-
-/* 購入済みボタン */
-#main-src.ds-list-new .primary-btn .fuka__list-submit {
-  padding: 0 !important;
-  cursor: default;
 }
 
 /* 購入済みボタンのデザインをブックマークと同じようなデザインに変更 */
@@ -41,22 +63,12 @@
   cursor: default;
 }
 
-/*
- * 商品詳細画面
- */
-.fuka__remove-hover {
-  cursor: default !important;
-}
-
-.fuka__remove-hover:hover {
-  opacity: 1 !important;
-}
 
 /*
  * まとめ買い画面
  */
 /* 購入済みボタン */
-.fuka__disabled-btn {
+.fuka__select-item_disabled-btn {
   appearance: none;
   background: url(//p.dmm.com/p/common/bt/bg_bt.gif) 0px center no-repeat rgb(210, 210, 210);
   border-color: rgb(187, 187, 187) rgb(153, 153, 153) rgb(136, 136, 136);

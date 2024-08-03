@@ -227,14 +227,14 @@ const getBookmarkList = () => {
     const title = img.alt;
     const imgUrl = img.src;
 
-    items.push({itemId, title, imgUrl});
+    items.push({ itemId, title, imgUrl });
   });
 
   return items;
 }
 
 /**
- * 詳細ページで所持済みかを表示
+ * 商品詳細ページで所持済みかを表示
  * 
  * FANZA側で購入済み表示になるものは無視する（そもそも購入用のformが存在しないため、IDが取得出来ない）
  */
@@ -266,8 +266,8 @@ const checkPurchased = async () => {
     /* 新デザイン */
     const newFormAll = document.querySelectorAll("form.basket__button--purchase");
     newFormAll.forEach((elem) => {
-      elem.parentElement.classList.add("fuka__remove-hover");
-      elem.classList.add("fuka__remove-hover");
+      elem.parentElement.classList.add("fuka__detail_remove-hover");
+      elem.classList.add("fuka__detail_remove-hover");
       const btn = elem.querySelector("input[type='submit']");
       if (!btn) return;
       btn.remove();
@@ -280,33 +280,28 @@ const checkPurchased = async () => {
 }
 
 /**
- * 一覧画面で所持済みかを表示
+ * 商品一覧画面で所持済みかを表示
  */
 const checkPurchasedInList = async () => {
-  const items = document.querySelectorAll("ul#list > li");
+  const items = document.querySelectorAll("ul.productList > li.productListItem");
   const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
     const form = elem.querySelector("form[action='/basket/v2/adds']");
     if (!form) return;
-    const div = form.querySelector("div:not(.primary-btn--bookmark)");
-    const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
+    const btn = form.querySelector("button[type='submit']");
+    const itemId = form.querySelector("input[name='item_info']").value.split('.')[0];
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
-    div.classList.add("fuka__remove-before");
-    div.classList.add("fuka__purchased-btn");
-    div.style.top = 0;
-    div.style.padding = "0 6px";
-    const btn = div.querySelector("input[type='submit']");
-    btn.classList.add("fuka__list-submit");
+    btn.classList.add("fuka__list_purchased-btn");
     btn.disabled = true;
-    btn.value = "購入済み";
+    btn.querySelector("span.component-textButton__text").textContent = "購入済み";
   });
 }
 
 /**
- * 検索結果画面で所持済みかを表示
+ * 検索一覧画面で所持済みかを表示
  */
 const checkPurchasedInSearch = async () => {
   const items = document.querySelectorAll("ul.component-legacy-productTile > li");
@@ -361,7 +356,7 @@ const checkPurchasedInRanking = async () => {
  * CSSクラス名が自動生成で仮想スクロール導入されてるのがとても面倒
  */
 const checkPurchasedInSelectItems = async () => {
-  const DISABLE_CLASS_NAME = "fuka__disabled-btn";
+  const DISABLE_CLASS_NAME = "fuka__select-item_disabled-btn";
   let enableClassList = [];
 
   const list = await getHoldingListFromStorage();
@@ -379,6 +374,7 @@ const checkPurchasedInSelectItems = async () => {
         }
         // FANZA側で無効になっているボタンはそのままにする
         if (!btn.classList.contains(DISABLE_CLASS_NAME)) {
+          if (!btn.disabled) btn.classList.add(...enableClassList);
           return;
         }
         // 一度無効になったボタンが有効に戻らないため、スタイルを復元する
@@ -388,7 +384,7 @@ const checkPurchasedInSelectItems = async () => {
         btn.textContent = "選択する";
         return;
       }
-  
+
       const btn = elem.querySelector("button");
       if (btn.disabled) return;
       btn.classList.remove(...btn.classList);
