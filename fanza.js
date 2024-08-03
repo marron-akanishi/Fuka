@@ -370,10 +370,12 @@ const checkPurchasedInSelectItems = async () => {
         const btn = elem.querySelector("button");
         // 有効ボタンのスタイルを取得しておく
         if (enableClassList.length === 0 && !btn.disabled) {
-          enableClassList = btn.classList;
+          // 念の為、無効スタイルは含まれないようにする
+          enableClassList = btn.classList.filter((className) => className !== DISABLE_CLASS_NAME);
         }
         // FANZA側で無効になっているボタンはそのままにする
         if (!btn.classList.contains(DISABLE_CLASS_NAME)) {
+          // 念の為有効スタイルで上書きしておく
           if (!btn.disabled) btn.classList.add(...enableClassList);
           return;
         }
