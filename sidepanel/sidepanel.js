@@ -1,19 +1,4 @@
-const HOLDING_LIST_ID = "holding"; // storage内所持リストID
 const BOOKMARK_LIST_ID = "bookmark"; // storage内お気に入り一覧ID
-
-/**
- * ストレージから所持リストを取得する
- * 
- * 所持リストの形状
- * - id: 購入済み管理ID
- * - itemId: 商品ID
- * - title: 商品名
- * - purchaseDate: 購入日
- */
-const getHoldingListFromStorage = async () => {
-  const storage = await chrome.storage.local.get(HOLDING_LIST_ID);
-  return storage[HOLDING_LIST_ID] || [];
-}
 
 /**
  * ストレージからお気に入り一覧を取得する
