@@ -62,7 +62,7 @@ const loadCsv = (file) => {
 /**
  * リスト取得
  */
-const getList = async () => {
+const displayHoldingList = async () => {
   const list = await getHoldingListFromStorage();
   const table = document.getElementById("list");
   // 総件数表示
@@ -100,7 +100,7 @@ const getList = async () => {
  */
 const clearStorage = () => {
   if (!confirm("全削除？")) return;
-  chrome.storage.local.clear(() => getList());
+  chrome.storage.local.clear(() => displayHoldingList());
 }
 
 /**
@@ -114,7 +114,7 @@ const deleteItem = async (itemId) => {
   const list = await getHoldingListFromStorage();
   const newList = list.filter((item) => item.itemId !== itemId);
   await setListToStorage(newList);
-  getList();
+  displayHoldingList();
 }
 
 /**
@@ -168,7 +168,7 @@ const addSingleItem = async () => {
   }
 
   await setListToStorage(result);
-  getList();
+  displayHoldingList();
   itemIdElem.value = "";
   titleElem.value = "";
   purchaseDateElem.value = "";
@@ -207,7 +207,7 @@ const addItemByCsv = async () => {
   });
 
   await setListToStorage(list);
-  getList();
+  displayHoldingList();
   document.getElementById("csv-file").value = null;
   alert(`${count}件の追加完了`);
 }
@@ -215,4 +215,4 @@ const addItemByCsv = async () => {
 document.getElementById("clear-btn").addEventListener("click", clearStorage);
 document.getElementById("add-btn").addEventListener("click", async () => await addSingleItem());
 document.getElementById("csv-add-btn").addEventListener("click", async () => await addItemByCsv());
-getList();
+displayHoldingList();
