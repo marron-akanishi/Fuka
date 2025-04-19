@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>Fuka</title>
@@ -8,7 +9,9 @@
       max-width: 768px;
     }
 
-    table, th, td {
+    table,
+    th,
+    td {
       border: 1px solid #333;
       border-collapse: collapse;
     }
@@ -32,6 +35,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="border">
     <h3>単一追加</h3>
@@ -54,7 +58,7 @@
   <div class="border">
     <h3>CSV追加</h3>
     <div class="checkbox">
-      <input type="checkbox" id="has-header" name="has-header" />
+      <input type="checkbox" id="has-header" name="has-header" checked />
       <label for="has-header">ヘッダー行あり</label>
     </div>
     <input type="file" id="csv-file" name="csv-file" accept=".csv" />
@@ -78,4 +82,5 @@
   </div>
   <script src="options.js"></script>
 </body>
+
 </html>

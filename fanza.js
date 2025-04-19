@@ -275,6 +275,10 @@ const checkPurchased = async () => {
       purchasedBtn.innerHTML = "購入済み";
       purchasedBtn.classList.add("basket__purchased");
       elem.appendChild(purchasedBtn);
+
+      /* バスケットに入れるボタン（非表示化） */
+      const busketBtn = elem.parentElement.nextElementSibling;
+      busketBtn?.remove();
     });
   }
 }
