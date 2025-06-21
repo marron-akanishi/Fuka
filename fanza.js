@@ -291,10 +291,9 @@ const checkPurchasedInList = async () => {
   const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
-    const form = elem.querySelector("form[action='/basket/v2/adds']");
-    if (!form) return;
-    const btn = form.querySelector("button[type='submit']");
-    const itemId = form.querySelector("input[name='item_info']").value.split('.')[0];
+    const btn = elem.querySelector("button[type='submit']");
+    if (!btn) return;
+    const itemId = btn.dataset.jsPjAddBasketProductId;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
@@ -312,17 +311,19 @@ const checkPurchasedInSearch = async () => {
   const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
-    const form = elem.querySelector("form[action='/basket/v2/adds']");
-    if (!form) return;
-    const itemId = form.querySelector("input[name='item_info']").value.split('.')[0];
+    const submitBtn = elem.querySelector("button.component-legacy-productTile__btnBasket");
+    if (!submitBtn) return;
+    const itemId = submitBtn.dataset.jsPjAddBasketProductId;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
-    const btn = form.querySelector("span.component-legacy-productTile__btnBasketInner");
+    const btn = elem.querySelector("span.component-legacy-productTile__btnBasketInner");
     btn.classList.add("fuka__remove-before");
-    btn.parentElement.classList.add("fuka__purchased-btn")
-    btn.parentElement.style.top = 0;
+    btn.parentElement.classList.add("fuka__purchased-btn");
     btn.parentElement.disabled = true;
+    btn.parentElement.style.top = 0;
+    btn.parentElement.style.cursor = 'default';
     btn.innerHTML = "<span style='width: 100%'>購入済み</span>";
   });
 }
@@ -335,10 +336,10 @@ const checkPurchasedInRanking = async () => {
   const list = await getHoldingListFromStorage();
 
   items.forEach((elem) => {
-    const form = elem.querySelector("form[action='/basket/v2/adds/']");
+    const form = elem.querySelector("form[action='https://dlsoft.dmm.co.jp/basket/add/']");
     if (!form) return;
     const div = form.querySelector("div.primary-btn");
-    const itemId = div.querySelector("input[name='item_info']").value.split('.')[0];
+    const itemId = div.querySelector("input[name='productId']").value;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
