@@ -6,9 +6,9 @@ window.onload = () => {
   const nowPath = location.pathname.split('/')[1].split('?')[0];
   displayPurchasedCount();
   switch (nowPath) {
-    case "mylibrary":
-      setListUpdateButtonForMyLibrary();
-      displayInListIcon();
+    case "library":
+      setListUpdateButtonForLibrary();
+      displayInListIconForLibrary();
       break;
     case "bookmark":
       setListUpdateButtonForBookmark();
@@ -50,40 +50,55 @@ const displayPurchasedCount = async () => {
 /**
  * 購入済み一覧に所持リスト更新ボタン設置
  */
-const setListUpdateButtonForMyLibrary = () => {
-  const span = document.createElement("span");
-  span.classList.add("ml-btn");
-  span.style.top = 0;
+const setListUpdateButtonForLibrary = () => {
+  const div = document.createElement("div");
+  div.classList.add("filterPanel__section");
 
-  const btn = document.createElement("input");
+  const btn = document.createElement("button");
+  btn.classList.add("button", "button--secondary", "button--small", "filterPanel__clearButton");
   btn.id = UPDATE_BTN_ID;
   btn.type = "button";
-  btn.value = "所持リスト更新";
+  btn.innerText = "所持リスト更新";
   btn.addEventListener("click", updateHoldingList);
-  span.appendChild(btn);
+  div.appendChild(btn);
 
-  const target = document.querySelector("form#search_form > div");
-  target.prepend(span);
+  const target = document.querySelector("div.searchContainer__filterPanel > div.filterPanel");
+  target.prepend(div);
 }
 
 /**
  * 所持リストに登録済みかを判定し、アイコンを表示
  */
-const displayInListIcon = async () => {
+const displayInListIconForLibrary = async () => {
   const list = await getHoldingListFromStorage();
+  const observer = new MutationObserver(() => {
+    addInListIcon(list);
+  });
 
-  const items = getMyLibraryList();
-  items.forEach((item) => {
-    const id = item.querySelector("div").id;
-    if (list.some((item) => item.id === id)) {
+  const listElem = document.querySelector("div.productList__grid");
+  observer.observe(listElem, {
+    childList: true
+  });
+
+  // 初回表示分
+  addInListIcon(list);
+}
+
+/**
+ * 購入済み一覧内のリストにチェックマークを付ける
+ */
+const addInListIcon = (list) => {
+  const items = getLibraryList();
+  items.forEach((elem) => {
+    const id = getItemId(elem);
+    if (list.some((item) => item.itemId === id)) {
       // すでにアイコンがついている場合はスキップ
-      if (item.querySelector(`div.fuka__done`)) return;
+      if (elem.querySelector(`div.fuka__done`)) return;
 
       const icon = document.createElement("div");
       icon.classList.add("fuka__done");
-      const target = item.querySelector("span.img");
-      target.style.position = "relative";
-      target.prepend(icon);
+      elem.style.position = "relative";
+      elem.prepend(icon);
     }
   });
 }
@@ -95,18 +110,16 @@ const updateHoldingList = async () => {
   disableUpdateButton(true);
 
   const list = await getHoldingListFromStorage();
-  const items = getMyLibraryList();
   const promises = [];
+  const items = getLibraryList();
   items.forEach((elem) => {
     const checkFunction = async (list, elem) => {
-      const id = elem.querySelector("div").id;
+      const id = getItemId(elem);
       // すでに所持リストに入っているものはスキップ
-      if (list.some((item) => item.id === id)) return;
+      if (list.some((item) => item.itemId === id)) return;
 
-      const img = elem.querySelector("img");
-      const itemId = img.src.split('/').reverse()[0].replace("ps.jpg", "");
       const { title, purchaseDate } = await getItemDetail(id);
-      list.push({ id, itemId, title, purchaseDate });
+      list.push({ id, itemId: id, title, purchaseDate });
     };
 
     promises.push(checkFunction(list, elem));
@@ -116,11 +129,27 @@ const updateHoldingList = async () => {
   const savedata = {};
   savedata[HOLDING_LIST_ID] = list;
   savedata[BOOKMARK_LIST_ID] = await getBookmarkListFromStorage();
-  chrome.storage.local.set(savedata, function () {
-    displayInListIcon();
+  chrome.storage.local.set(savedata, async function () {
+    const list = await getHoldingListFromStorage();
+    addInListIcon(list);
   });
 
   disableUpdateButton(false);
+}
+
+/**
+ * 購入済み一覧内の商品リストを取得する
+ */
+const getLibraryList = () => {
+  return document.querySelectorAll("div.productList__grid > div");
+}
+
+/**
+ * 商品IDを取得する
+ */
+const getItemId = (elem) => {
+  const reviewLink = elem.querySelector("div.productCard__imageContainer > img").src;
+  return reviewLink.split('/pcgame')[1].split('/')[1];
 }
 
 /**
@@ -131,10 +160,10 @@ const disableUpdateButton = (isDisabled) => {
   if (!btn) return;
 
   if (isDisabled) {
-    btn.value = "更新中";
+    btn.innerText = "更新中";
     btn.disabled = true;
   } else {
-    btn.value = "所持リスト更新";
+    btn.innerText = "所持リスト更新";
     btn.disabled = false;
   }
 }
@@ -143,26 +172,13 @@ const disableUpdateButton = (isDisabled) => {
  * 商品のタイトルと購入日を取得する
  */
 const getItemDetail = async (id) => {
-  const resp = await fetch(`https://dlsoft.dmm.co.jp/mylibrary/detail/?item=${id}`);
-  const html = await resp.text();
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const cite = doc.querySelector("div.title > cite");
-  const title = cite.querySelector("a") ? cite.querySelector("a").textContent : cite.textContent;
-  const date = doc.querySelector("p.ml-item.date").textContent;
+  const resp = await fetch(`https://dlsoft.dmm.co.jp/ajax/v1/library/detail/single/?productId=${id}`);
+  const json = await resp.json();
 
   return {
-    title,
-    purchaseDate: date.replace("購入日：", ""),
+    title: json.body.productDetail.product.title,
+    purchaseDate: json.body.order.orderDate.split(' ')[0],
   }
-}
-
-/**
- * 購入済み一覧内のリストを取得する
- */
-const getMyLibraryList = () => {
-  return document.querySelectorAll("ul#js-list > li");
 }
 
 /**

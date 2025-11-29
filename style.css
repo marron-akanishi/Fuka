@@ -11,6 +11,13 @@
   height: 20px;
 }
 
+/* 更新ボタン */
+#fuka-update:disabled {
+  opacity: 0.7 !important;
+  cursor: default !important;
+  box-shadow: none !important;
+}
+
 /*
  * お気に入りリスト画面
  */
