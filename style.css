@@ -70,6 +70,15 @@
   cursor: default;
 }
 
+/* ブックマークボタンのデザインを変更 */
+.fuka__bookmarked-btn {
+  cursor: default !important;
+  opacity: 0.8;
+}
+
+.fuka__bookmarked-btn:hover {
+  top: 0 !important;
+}
 
 /*
  * まとめ買い画面

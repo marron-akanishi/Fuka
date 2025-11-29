@@ -16,15 +16,19 @@ window.onload = () => {
       break;
     case "detail":
       checkPurchased();
+      checkBookmarked();
       break;
     case "list":
       checkPurchasedInList();
+      checkBookmarkedInList();
       break;
     case "search":
       checkPurchasedInSearch();
+      checkBookmarkedInSearch();
       break;
     case "ranking":
       checkPurchasedInRanking();
+      checkBookmarkedInRanking();
       break;
     case "basket":
       if (location.pathname.split('/')[2] !== "select_items") break;
@@ -58,7 +62,7 @@ const setListUpdateButtonForLibrary = () => {
   btn.classList.add("button", "button--secondary", "button--small", "filterPanel__clearButton");
   btn.id = UPDATE_BTN_ID;
   btn.type = "button";
-  btn.innerText = "所持リスト更新";
+  btn.innerText = "ストレージ更新";
   btn.addEventListener("click", updateHoldingList);
   div.appendChild(btn);
 
@@ -163,7 +167,7 @@ const disableUpdateButton = (isDisabled) => {
     btn.innerText = "更新中";
     btn.disabled = true;
   } else {
-    btn.innerText = "所持リスト更新";
+    btn.innerText = "ストレージ更新";
     btn.disabled = false;
   }
 }
@@ -192,7 +196,7 @@ const setListUpdateButtonForBookmark = () => {
   const btn = document.createElement("button");
   btn.id = UPDATE_BTN_ID;
   btn.type = "button";
-  btn.textContent = "お気に入り一覧更新";
+  btn.textContent = "ストレージ更新";
   btn.addEventListener("click", updateBookmarkList);
   span.appendChild(btn);
 
@@ -300,6 +304,26 @@ const checkPurchased = async () => {
 }
 
 /**
+ * 商品詳細ページでお気に入り登録済みかを表示
+ */
+const checkBookmarked = async () => {
+  const bookmarkForm = document.querySelector("div.basket__AnchorButton--bookmark");
+  if (!bookmarkForm) return;
+  const id = bookmarkForm.querySelector("input[name='pid']").value;
+  const list = await getBookmarkListFromStorage();
+  const item = list.find((item) => id.startsWith(item.itemId));
+
+  if (item) {
+    const btn = bookmarkForm.querySelector("input[type='submit']");
+    btn.disabled = true;
+    btn.style.cursor = "default";
+    btn.value = "お気に入り登録済み";
+    bookmarkForm.parentElement.classList.add("fuka__detail_remove-hover");
+    bookmarkForm.parentElement.parentElement.classList.add("fuka__detail_remove-hover");
+  }
+}
+
+/**
  * 商品一覧画面で所持済みかを表示
  */
 const checkPurchasedInList = async () => {
@@ -316,6 +340,23 @@ const checkPurchasedInList = async () => {
     btn.classList.add("fuka__list_purchased-btn");
     btn.disabled = true;
     btn.querySelector("span.component-textButton__text").textContent = "購入済み";
+  });
+}
+
+/**
+ * 商品一覧画面でお気に入り登録済みかを表示
+ */
+const checkBookmarkedInList = async () => {
+  const items = document.querySelectorAll("ul.productList > li.productListItem");
+  const list = await getBookmarkListFromStorage();
+
+  items.forEach((elem) => {
+    const bookmarkBtn = elem.querySelector("button.component-cardProductBuy__iconButton--bookmark");
+    if (!bookmarkBtn) return;
+    const itemId = bookmarkBtn.dataset.jsPrjCardproductbuyBookmarkButtonPid;
+    const item = list.find((item) => itemId.startsWith(item.itemId));
+    if (!item) return;
+    bookmarkBtn.dataset.cssPrjCardproductbuyBookmarkButton = true;
   });
 }
 
@@ -345,6 +386,24 @@ const checkPurchasedInSearch = async () => {
 }
 
 /**
+ * 検索一覧画面でお気に入り登録済みかを表示
+ */
+const checkBookmarkedInSearch = async () => {
+  const items = document.querySelectorAll("ul.component-legacy-productTile > li");
+  const list = await getBookmarkListFromStorage();
+  items.forEach((elem) => {
+    const bookmarkBtn = elem.querySelector("button.component-legacy-productTile__btnBookmark");
+    if (!bookmarkBtn) return; 
+    const itemId = bookmarkBtn.dataset.producttilePid;
+    const item = list.find((item) => itemId.startsWith(item.itemId));
+    if (!item) return;
+    bookmarkBtn.classList.add("fuka__bookmarked-btn");
+    bookmarkBtn.disabled = true;
+    bookmarkBtn.querySelector("span.component-legacy-productTile__btnBookmarkInner > span").textContent = "お気に入り登録済み";
+  });
+}
+
+/**
  * ランキング画面で所持済みかを表示
  */
 const checkPurchasedInRanking = async () => {
@@ -368,6 +427,26 @@ const checkPurchasedInRanking = async () => {
     btn.disabled = true;
     btn.style.cursor = "default";
     btn.value = "購入済み";
+  });
+}
+
+/**
+ * ランキング画面でお気に入り登録済みかを表示
+ */
+const checkBookmarkedInRanking = async () => {
+  const items = document.querySelectorAll("ul.rankingList-content > li");
+  const list = await getBookmarkListFromStorage();
+
+  items.forEach((elem) => {
+    const bookmarkBtn = elem.querySelector("div.primary-btn--bookmark > button");
+    if (!bookmarkBtn) return;
+    const itemId = bookmarkBtn.dataset.jsPageRankingBookmarkButtonPid;
+    const item = list.find((item) => itemId.startsWith(item.itemId));
+    if (!item) return;
+    bookmarkBtn.parentElement.classList.add("fuka__bookmarked-btn");
+    bookmarkBtn.disabled = true;
+    bookmarkBtn.style.cursor = "default";
+    bookmarkBtn.textContent = "お気に入り登録済み";
   });
 }
 
