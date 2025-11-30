@@ -334,6 +334,7 @@ const checkPurchasedInList = async () => {
     const btn = elem.querySelector("button[type='submit']");
     if (!btn) return;
     const itemId = btn.dataset.jsPjAddBasketProductId;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
@@ -354,6 +355,7 @@ const checkBookmarkedInList = async () => {
     const bookmarkBtn = elem.querySelector("button.component-cardProductBuy__iconButton--bookmark");
     if (!bookmarkBtn) return;
     const itemId = bookmarkBtn.dataset.jsPrjCardproductbuyBookmarkButtonPid;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
     bookmarkBtn.dataset.cssPrjCardproductbuyBookmarkButton = true;
@@ -395,6 +397,7 @@ const checkBookmarkedInSearch = async () => {
     const bookmarkBtn = elem.querySelector("button.component-legacy-productTile__btnBookmark");
     if (!bookmarkBtn) return; 
     const itemId = bookmarkBtn.dataset.producttilePid;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
     bookmarkBtn.classList.add("fuka__bookmarked-btn");
@@ -415,6 +418,7 @@ const checkPurchasedInRanking = async () => {
     if (!form) return;
     const div = form.querySelector("div.primary-btn");
     const itemId = div.querySelector("input[name='productId']").value;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
 
@@ -441,6 +445,7 @@ const checkBookmarkedInRanking = async () => {
     const bookmarkBtn = elem.querySelector("div.primary-btn--bookmark > button");
     if (!bookmarkBtn) return;
     const itemId = bookmarkBtn.dataset.jsPageRankingBookmarkButtonPid;
+    if (!itemId) return;
     const item = list.find((item) => itemId.startsWith(item.itemId));
     if (!item) return;
     bookmarkBtn.parentElement.classList.add("fuka__bookmarked-btn");
