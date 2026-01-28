@@ -176,9 +176,22 @@ const disableUpdateButton = (isDisabled) => {
  * 商品のタイトルと購入日を取得する
  */
 const getItemDetail = async (id) => {
-  const resp = await fetch(`https://dlsoft.dmm.co.jp/ajax/v1/library/detail/single/?productId=${id}`);
-  const json = await resp.json();
+  let resp = await fetch(`https://dlsoft.dmm.co.jp/ajax/v1/library/detail/single/?productId=${id}`);
 
+  // IDが異なる場合があるので、別のIDで取得してみる
+  let seq = 0;
+  while (!resp.ok) {
+    seq++;
+    if (seq > 2) break;
+    resp = await fetch(`https://dlsoft.dmm.co.jp/ajax/v1/library/detazil/single/?productId=${id}_${seq}`);
+  }
+
+  // 別IDを使っても取得できなければ、タイトルの取得を諦めてIDで保存しておく
+  if (!resp.ok) {
+    return {title: id, purchaseDate: new Date().toDateString()}
+  }
+
+  const json = await resp.json();
   return {
     title: json.body.productDetail.product.title,
     purchaseDate: json.body.order.orderDate.split(' ')[0],
